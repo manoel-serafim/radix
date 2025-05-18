@@ -30,7 +30,7 @@
   .type vector_table__, %object
 vector_table__:
   .word _estack
-  .word reset_
+  .word reset_ //track(RM0383/6.1.2)
   .word NMI_Handler
   .word HardFault_Handler
   .word	MemManage_Handler

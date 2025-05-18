@@ -18,6 +18,9 @@
 .cpu cortex-m4
 .thumb
 
+#include "hal/stm32f411xe.h"
+#include "hooks/blink.h"
+
 .global reset_
 /**
  * @brief  This is the code that gets called when the processor first
@@ -36,6 +39,15 @@ reset_:
 /**
  */
 /*bl  rcc_init (Init Cache, PLL , etc)*/  
+/**
+ * @brief Setup clock control registers and system clock
+ * @details This assembly routine initializes the .data section in SRAM by copying
+ *          its values from the corresponding region in FLASH. The .data section holds
+ *          initialized global and static variables that must persist with specific
+ *          initial values at runtime.
+ *  @note If there is no use of initiallized global values, this may break the initialization code. 
+ *        Still, no unreallistic overhead is added considering that the application established here will use it
+ */
 
 
 /**
@@ -80,5 +92,5 @@ zero_bss__reset_:
   bne zero_bss__reset_
 
 
-  // bl app_init
+  bl rdx_init
   .size reset_, .-reset_

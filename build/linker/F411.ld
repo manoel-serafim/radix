@@ -4,7 +4,7 @@ ENTRY(reset_)
 
 MEMORY
 {
-   FLASH(RX) : ORIGIN = 0x08000000, LENGTH = 512K
+   FLASH_BOOT(RX) : ORIGIN = 0x08000000, LENGTH = 512K
    SRAM(XRW) : ORIGIN = 0x20000000, LENGTH = 128K
 }
 _estack = ORIGIN(SRAM) + LENGTH(SRAM);
@@ -16,14 +16,14 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) 
     . = ALIGN(4);
-   } >FLASH
+   } >FLASH_BOOT
 
    .text : {
       . = ALIGN(4);
       *(.text)
       *(.text*)
       . = ALIGN(4);
-   } > FLASH
+   } > FLASH_BOOT
 
    _sidata = LOADADDR(.data);
    .data :
@@ -35,7 +35,7 @@ SECTIONS
       . = ALIGN(4);
       _edata = .;        
 
-   } >SRAM AT> FLASH
+   } >SRAM AT> FLASH_BOOT
    .bss  : 
    {
     _sbss = .;         
