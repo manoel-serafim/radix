@@ -3,36 +3,141 @@ images/RDX.elf:	file format elf32-littlearm
 
 Disassembly of section .text:
 
-08000198 <reset_>:
- 8000198: 480a         	ldr	r0, [pc, #0x28]         @ 0x80001c4 <zero_bss__reset_+0xa>
- 800019a: 4685         	mov	sp, r0
- 800019c: 480a         	ldr	r0, [pc, #0x28]         @ 0x80001c8 <zero_bss__reset_+0xe>
- 800019e: 490b         	ldr	r1, [pc, #0x2c]         @ 0x80001cc <zero_bss__reset_+0x12>
- 80001a0: 4a0b         	ldr	r2, [pc, #0x2c]         @ 0x80001d0 <zero_bss__reset_+0x16>
- 80001a2: eba1 0300    	sub.w	r3, r1, r0
+080001c8 <rdx_init>:
+ 80001c8: b580         	push	{r7, lr}
+ 80001ca: 466f         	mov	r7, sp
+ 80001cc: 200d         	movs	r0, #0xd
+ 80001ce: f000 f80b    	bl	0x80001e8 <led_init>    @ imm = #0x16
+ 80001d2: e7ff         	b	0x80001d4 <rdx_init+0xc> @ imm = #-0x2
+ 80001d4: f000 f84a    	bl	0x800026c <led_on>      @ imm = #0x94
+ 80001d8: f000 f854    	bl	0x8000284 <delay>       @ imm = #0xa8
+ 80001dc: f000 f866    	bl	0x80002ac <led_off>     @ imm = #0xcc
+ 80001e0: f000 f850    	bl	0x8000284 <delay>       @ imm = #0xa0
+ 80001e4: e7f6         	b	0x80001d4 <rdx_init+0xc> @ imm = #-0x14
+ 80001e6: bf00         	nop
 
-080001a6 <copy_flash__reset_>:
- 80001a6: f1a3 0304    	sub.w	r3, r3, #0x4
- 80001aa: 58d4         	ldr	r4, [r2, r3]
- 80001ac: 50c4         	str	r4, [r0, r3]
- 80001ae: d1fa         	bne	0x80001a6 <copy_flash__reset_> @ imm = #-0xc
- 80001b0: 4808         	ldr	r0, [pc, #0x20]         @ 0x80001d4 <zero_bss__reset_+0x1a>
- 80001b2: 4909         	ldr	r1, [pc, #0x24]         @ 0x80001d8 <zero_bss__reset_+0x1e>
- 80001b4: 2200         	movs	r2, #0x0
- 80001b6: eba1 0300    	sub.w	r3, r1, r0
+080001e8 <led_init>:
+ 80001e8: b083         	sub	sp, #0xc
+ 80001ea: 9002         	str	r0, [sp, #0x8]
+ 80001ec: f643 0000    	movw	r0, #0x3800
+ 80001f0: f2c4 0002    	movt	r0, #0x4002
+ 80001f4: 9000         	str	r0, [sp]
+ 80001f6: 9900         	ldr	r1, [sp]
+ 80001f8: 6b08         	ldr	r0, [r1, #0x30]
+ 80001fa: f040 0004    	orr	r0, r0, #0x4
+ 80001fe: 6308         	str	r0, [r1, #0x30]
+ 8000200: f240 0104    	movw	r1, #0x4
+ 8000204: f2c2 0100    	movt	r1, #0x2000
+ 8000208: f640 0000    	movw	r0, #0x800
+ 800020c: f2c4 0002    	movt	r0, #0x4002
+ 8000210: 6008         	str	r0, [r1]
+ 8000212: 9802         	ldr	r0, [sp, #0x8]
+ 8000214: 0040         	lsls	r0, r0, #0x1
+ 8000216: 9001         	str	r0, [sp, #0x4]
+ 8000218: 9a01         	ldr	r2, [sp, #0x4]
+ 800021a: 2003         	movs	r0, #0x3
+ 800021c: fa00 f302    	lsl.w	r3, r0, r2
+ 8000220: 680a         	ldr	r2, [r1]
+ 8000222: 6810         	ldr	r0, [r2]
+ 8000224: 4398         	bics	r0, r3
+ 8000226: 6010         	str	r0, [r2]
+ 8000228: 9a01         	ldr	r2, [sp, #0x4]
+ 800022a: 2001         	movs	r0, #0x1
+ 800022c: fa00 fc02    	lsl.w	r12, r0, r2
+ 8000230: 680b         	ldr	r3, [r1]
+ 8000232: 681a         	ldr	r2, [r3]
+ 8000234: ea42 020c    	orr.w	r2, r2, r12
+ 8000238: 601a         	str	r2, [r3]
+ 800023a: 9a02         	ldr	r2, [sp, #0x8]
+ 800023c: fa00 f302    	lsl.w	r3, r0, r2
+ 8000240: 680a         	ldr	r2, [r1]
+ 8000242: 6851         	ldr	r1, [r2, #0x4]
+ 8000244: 4399         	bics	r1, r3
+ 8000246: 6051         	str	r1, [r2, #0x4]
+ 8000248: 9902         	ldr	r1, [sp, #0x8]
+ 800024a: fa00 f101    	lsl.w	r1, r0, r1
+ 800024e: f240 0208    	movw	r2, #0x8
+ 8000252: f2c2 0200    	movt	r2, #0x2000
+ 8000256: 6011         	str	r1, [r2]
+ 8000258: 9902         	ldr	r1, [sp, #0x8]
+ 800025a: 3110         	adds	r1, #0x10
+ 800025c: 4088         	lsls	r0, r1
+ 800025e: f240 010c    	movw	r1, #0xc
+ 8000262: f2c2 0100    	movt	r1, #0x2000
+ 8000266: 6008         	str	r0, [r1]
+ 8000268: b003         	add	sp, #0xc
+ 800026a: 4770         	bx	lr
 
-080001ba <zero_bss__reset_>:
- 80001ba: f1a3 0304    	sub.w	r3, r3, #0x4
- 80001be: 50c2         	str	r2, [r0, r3]
- 80001c0: d1fb         	bne	0x80001ba <zero_bss__reset_> @ imm = #-0xa
- 80001c2: 0000         	movs	r0, r0
- 80001c4: 00 00 02 20  	.word	0x20020000
- 80001c8: 00 00 00 20  	.word	0x20000000
- 80001cc: 00 00 00 20  	.word	0x20000000
- 80001d0: e0 01 00 08  	.word	0x080001e0
- 80001d4: 00 00 00 20  	.word	0x20000000
- 80001d8: 00 00 00 20  	.word	0x20000000
+0800026c <led_on>:
+ 800026c: f240 0008    	movw	r0, #0x8
+ 8000270: f2c2 0000    	movt	r0, #0x2000
+ 8000274: 6800         	ldr	r0, [r0]
+ 8000276: f240 0104    	movw	r1, #0x4
+ 800027a: f2c2 0100    	movt	r1, #0x2000
+ 800027e: 6809         	ldr	r1, [r1]
+ 8000280: 6188         	str	r0, [r1, #0x18]
+ 8000282: 4770         	bx	lr
 
-080001dc <loop__default_>:
- 80001dc: e7fe         	b	0x80001dc <loop__default_> @ imm = #-0x4
- 80001de: d4d4         	bmi	0x800018a <vector_table__+0x18a> @ imm = #-0x58
+08000284 <delay>:
+ 8000284: b081         	sub	sp, #0x4
+ 8000286: f240 0000    	movw	r0, #0x0
+ 800028a: f2c2 0000    	movt	r0, #0x2000
+ 800028e: 6800         	ldr	r0, [r0]
+ 8000290: f44f 7148    	mov.w	r1, #0x320
+ 8000294: 4348         	muls	r0, r1, r0
+ 8000296: 9000         	str	r0, [sp]
+ 8000298: e7ff         	b	0x800029a <delay+0x16>  @ imm = #-0x2
+ 800029a: 9800         	ldr	r0, [sp]
+ 800029c: 1e41         	subs	r1, r0, #0x1
+ 800029e: 9100         	str	r1, [sp]
+ 80002a0: b108         	cbz	r0, 0x80002a6 <delay+0x22> @ imm = #0x2
+ 80002a2: e7ff         	b	0x80002a4 <delay+0x20>  @ imm = #-0x2
+ 80002a4: e7f9         	b	0x800029a <delay+0x16>  @ imm = #-0xe
+ 80002a6: b001         	add	sp, #0x4
+ 80002a8: 4770         	bx	lr
+ 80002aa: bf00         	nop
+
+080002ac <led_off>:
+ 80002ac: f240 000c    	movw	r0, #0xc
+ 80002b0: f2c2 0000    	movt	r0, #0x2000
+ 80002b4: 6800         	ldr	r0, [r0]
+ 80002b6: f240 0104    	movw	r1, #0x4
+ 80002ba: f2c2 0100    	movt	r1, #0x2000
+ 80002be: 6809         	ldr	r1, [r1]
+ 80002c0: 6188         	str	r0, [r1, #0x18]
+ 80002c2: 4770         	bx	lr
+
+080002c4 <reset_>:
+ 80002c4: 480b         	ldr	r0, [pc, #0x2c]         @ 0x80002f4 <zero_bss__reset_+0xe>
+ 80002c6: 4685         	mov	sp, r0
+ 80002c8: 480b         	ldr	r0, [pc, #0x2c]         @ 0x80002f8 <zero_bss__reset_+0x12>
+ 80002ca: 490c         	ldr	r1, [pc, #0x30]         @ 0x80002fc <zero_bss__reset_+0x16>
+ 80002cc: 4a0c         	ldr	r2, [pc, #0x30]         @ 0x8000300 <zero_bss__reset_+0x1a>
+ 80002ce: eba1 0300    	sub.w	r3, r1, r0
+
+080002d2 <copy_flash__reset_>:
+ 80002d2: f1a3 0304    	sub.w	r3, r3, #0x4
+ 80002d6: 58d4         	ldr	r4, [r2, r3]
+ 80002d8: 50c4         	str	r4, [r0, r3]
+ 80002da: d1fa         	bne	0x80002d2 <copy_flash__reset_> @ imm = #-0xc
+ 80002dc: 4809         	ldr	r0, [pc, #0x24]         @ 0x8000304 <zero_bss__reset_+0x1e>
+ 80002de: 490a         	ldr	r1, [pc, #0x28]         @ 0x8000308 <zero_bss__reset_+0x22>
+ 80002e0: 2200         	movs	r2, #0x0
+ 80002e2: eba1 0300    	sub.w	r3, r1, r0
+
+080002e6 <zero_bss__reset_>:
+ 80002e6: f1a3 0304    	sub.w	r3, r3, #0x4
+ 80002ea: 50c2         	str	r2, [r0, r3]
+ 80002ec: d1fb         	bne	0x80002e6 <zero_bss__reset_> @ imm = #-0xa
+ 80002ee: f7ff ff6b    	bl	0x80001c8 <rdx_init>    @ imm = #-0x12a
+ 80002f2: 0000         	movs	r0, r0
+ 80002f4: 00 00 02 20  	.word	0x20020000
+ 80002f8: 00 00 00 20  	.word	0x20000000
+ 80002fc: 04 00 00 20  	.word	0x20000004
+ 8000300: 10 03 00 08  	.word	0x08000310
+ 8000304: 04 00 00 20  	.word	0x20000004
+ 8000308: 10 00 00 20  	.word	0x20000010
+
+0800030c <loop__default_>:
+ 800030c: e7fe         	b	0x800030c <loop__default_> @ imm = #-0x4
+ 800030e: d4d4         	bmi	0x80002ba <led_off+0xe> @ imm = #-0x58
