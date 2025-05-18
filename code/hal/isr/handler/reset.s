@@ -52,12 +52,12 @@ reset_:
   ldr r2, =_sidata
   sub r3, r1, r0
 
-copy_flash__:
+copy_flash__reset_:
   sub r3, r3, #4
   ldr r4, [r2, r3]  
   str r4, [r0, r3]
   
-  bne copy_flash__     
+  bne copy_flash__reset_     
 
 
 /**
@@ -73,12 +73,12 @@ copy_flash__:
   movs r2, #0
   sub r3, r1, r0
 
-zero_bss__:
+zero_bss__reset_:
   sub r3, r3, #4
   str  r2, [r0, r3]
   
-  bne zero_bss__
+  bne zero_bss__reset_
 
 
-  bl app_init
+  // bl app_init
   .size reset_, .-reset_
