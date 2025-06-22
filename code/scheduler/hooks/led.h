@@ -2,6 +2,6 @@
 #ifndef HOOKS_H
 #define HOOKS_H
 
-void rdx_init(void);
+void hook(void);
 
 #endif // HOOKS_H

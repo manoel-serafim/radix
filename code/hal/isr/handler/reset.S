@@ -18,8 +18,7 @@
 .cpu cortex-m4
 .thumb
 
-#include "hal/stm32f411xe.h"
-#include "hooks/blink.h"
+#include "scheduler/hooks/led.h"
 
 .global reset_
 /**
@@ -56,21 +55,27 @@ reset_:
  *          its values from the corresponding region in FLASH. The .data section holds
  *          initialized global and static variables that must persist with specific
  *          initial values at runtime.
+ *
  *  @note If there is no use of initiallized global values, this may break the initialization code. 
  *        Still, no unreallistic overhead is added considering that the application established here will use it
+ *
+ *  @pre Linker symbols `_sdata`, `_edata`, and `_sidata` must be properly defined
+ *      by the linker script. The memory region between `_sdata` and `_edata` in SRAM
+ *      will be overwritten with the contents from `_sidata` in FLASH.
+ *
  */
+
   ldr r0, =_sdata       
   ldr r1, =_edata       
   ldr r2, =_sidata
-  sub r3, r1, r0
+  subs r3, r1, r0
 
 copy_flash__reset_:
-  sub r3, r3, #4
+  subs r3, #4
   ldr r4, [r2, r3]  
   str r4, [r0, r3]
   
-  bne copy_flash__reset_     
-
+  bne copy_flash__reset_
 
 /**
  * @brief Zero fills the .bss section in SRAM.
@@ -80,17 +85,18 @@ copy_flash__reset_:
  *          variables in the .bss section are properly set to zero before the program begins execution.
  * @note Variables to be initiallized with zero go here
  */
+ 
   ldr r0, =_sbss
   ldr r1, =_ebss
   movs r2, #0
-  sub r3, r1, r0
+  subs r3, r1, r0
 
 zero_bss__reset_:
-  sub r3, r3, #4
+  subs r3, #4
   str  r2, [r0, r3]
   
   bne zero_bss__reset_
 
-
-  bl rdx_init
+  bl hook
+  b .
   .size reset_, .-reset_

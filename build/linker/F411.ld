@@ -47,3 +47,6 @@ SECTIONS
     __bss_end__ = _ebss;
     } > SRAM
 }
+
+ASSERT(_edata > _sdata, "LINKING ERROR: .data section is empty or misconfigured — no global initialized variables found or section incorrectly defined.")
+ASSERT(_ebss > _sbss, "LINKING ERROR: .bss section is empty or misconfigured — no zero-initialized global variables found or section incorrectly defined.")
