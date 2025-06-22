@@ -11,7 +11,7 @@ CC := clang
 LD := ld.lld
 OBJCOPY := llvm-objcopy
 OBJDUMP := llvm-objdump
-GDB := gdb-multiarch
+GDB := arm-none-eabi-gdb
 
 # === Target names ===
 EXEC := RDX
@@ -37,7 +37,7 @@ CFLAGS := -Wall -Wextra -Werror \
           -Wfloat-equal -Wformat -Wimplicit-function-declaration \
           -Wmissing-prototypes -Wnull-dereference -Wshadow \
           -Wsign-compare -Wstrict-aliasing -Wuninitialized \
-          -Wunused-variable
+          -Wunused-variable -g
 
 LDFLAGS := -T $(LINKER_DESCRIPTOR) -nostdlib -Map=$(MAP)
 
@@ -77,6 +77,9 @@ flash_bin: $(BIN)
 	openocd $(OCDCFG) -c "program $(BIN) 0x08000000 verify reset exit"
 
 # === GDB Debug ===
+debug:
+	openocd -f /usr/share/openocd/scripts/interface/stlink.cfg -f /usr/share/openocd/scripts/target/stm32f4x.cfg
+
 gdb:
 	$(GDB) --eval-command="target remote localhost:3333" $(ELF)
 
@@ -103,6 +106,6 @@ uncrustify: $(CRUST)
 
 # === Clean ===
 clean:
-	rm -rf $(IMAGE_DIR)
+	rm -rf $(IMAGE_DIR) $(OBJ_DIR)
 
-.PHONY: all clean flash flash_bin gdb gdbtui uncrustify cppcheck
+.PHONY: all clean flash flash_bin gdb gdbtui uncrustify cppcheck debug
