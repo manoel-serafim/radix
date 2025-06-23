@@ -1,5 +1,6 @@
 # === Paths ===
 CODE_DIR := ../code
+INC_DIR := ../include
 BUILD_DIR := .
 OBJ_DIR := $(BUILD_DIR)/objects
 IMAGE_DIR := $(BUILD_DIR)/images
@@ -22,17 +23,16 @@ MAP := $(IMAGE_DIR)/$(EXEC).map
 
 # === Find sources ===
 SRCS_C := $(shell find $(CODE_DIR) -name "*.c")
-SRCS_S := $(shell find $(CODE_DIR) -name "*.s")
-SRCS := $(SRCS_C) $(SRCS_S)
+SRCS_S := $(shell find $(CODE_DIR) -name "*.S")
 
 # === Generate object files in OBJ_DIR (mirroring src paths)
 OBJS := $(patsubst $(CODE_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS_C))
-OBJS += $(patsubst $(CODE_DIR)/%.s,$(OBJ_DIR)/%.o,$(SRCS_S))
+OBJS += $(patsubst $(CODE_DIR)/%.S,$(OBJ_DIR)/%.o,$(SRCS_S))
 
 # === Compiler and Linker Flags ===
 CFLAGS := -Wall -Wextra -Werror \
           -target arm-none-eabi -mcpu=cortex-m4 -mthumb \
-          -nostdlib -I$(CODE_DIR) \
+          -nostdlib -I$(CODE_DIR) -I$(INC_DIR) \
           -Waddress -Warray-bounds -Wcast-align -Wconversion \
           -Wfloat-equal -Wformat -Wimplicit-function-declaration \
           -Wmissing-prototypes -Wnull-dereference -Wshadow \
@@ -63,13 +63,15 @@ $(OBJ_DIR)/%.o: $(CODE_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Compile ASM sources
-$(OBJ_DIR)/%.o: $(CODE_DIR)/%.s
+$(OBJ_DIR)/%.o: $(CODE_DIR)/%.S
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# === Flash via OpenOCD ===
-OCDCFG := -f /usr/share/openocd/scripts/interface/stlink.cfg -f /usr/share/openocd/scripts/target/stm32f4x.cfg
+# === OpenOCD Configuration ===
+OCDCFG := -f /usr/share/openocd/scripts/interface/stlink.cfg \
+          -f /usr/share/openocd/scripts/target/stm32f4x.cfg 
 
+# === Flash via OpenOCD ===
 flash: $(ELF)
 	openocd $(OCDCFG) -c "program $(ELF) verify reset exit"
 
@@ -78,13 +80,14 @@ flash_bin: $(BIN)
 
 # === GDB Debug ===
 debug:
-	openocd -f /usr/share/openocd/scripts/interface/stlink.cfg -f /usr/share/openocd/scripts/target/stm32f4x.cfg
+	openocd $(OCDCFG)
 
 gdb:
 	$(GDB) --eval-command="target remote localhost:3333" $(ELF)
 
 gdbtui:
 	$(GDB) -tui --eval-command="target remote localhost:3333" $(ELF)
+
 
 # === Static Analysis ===
 HEADERS := $(shell find $(CODE_DIR) -type f -name "*.h")
